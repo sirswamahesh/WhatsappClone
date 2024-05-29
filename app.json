@@ -4,7 +4,9 @@
     "slug": "mahesh",
     "version": "1.0.0",
     "orientation": "portrait",
+    "jsEngine": "hermes",
     "userInterfaceStyle": "light",
+    "entryPoint": "./index.js",
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
@@ -14,7 +16,6 @@
     },
     "android": {
       "adaptiveIcon": {
-       
         "backgroundColor": "#ffffff"
       }
     },

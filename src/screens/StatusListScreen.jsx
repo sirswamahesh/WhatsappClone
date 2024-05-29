@@ -17,7 +17,7 @@ const StatusListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.background,
-    padding: 16,
+    // padding: 16,
   },
 });
 

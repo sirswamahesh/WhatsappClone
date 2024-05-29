@@ -4,8 +4,9 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import CommunityScreen from "../screens/CommunityScreen";
 
 import { Colors } from "../theme/Colors";
-import Icon from "react-native-vector-icons/Ionicons";
+
 import { TabBarData } from "../data/TabbarData";
+import VectorIcon from "../utils/VectorIcon";
 
 const Tab = createMaterialTopTabNavigator();
 const TopTabbar = () => {
@@ -28,16 +29,21 @@ const TopTabbar = () => {
         name="Community"
         component={CommunityScreen}
         options={{
-            tabBarShowLabel:false,
+          tabBarShowLabel: false,
           tabBarIcon: ({ color }) => (
-            <Icon type="FontAweSome" name="people" size={25} color={color} />
+            <VectorIcon
+              type="FontAwesome5"
+              name="users"
+              size={19}
+              color={color}
+            />
           ),
         }}
       />
 
-      {TabBarData.map((tab)=> <Tab.Screen key={tab.id} name={tab.name} component={tab.route}/>)}
-     
-      
+      {TabBarData.map((tab) => (
+        <Tab.Screen key={tab.id} name={tab.name} component={tab.route} />
+      ))}
     </Tab.Navigator>
   );
 };

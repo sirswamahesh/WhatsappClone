@@ -7,6 +7,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Feather from "react-native-vector-icons/Feather";
 
 const iconSets = {
   MaterialIcons,
@@ -16,6 +17,7 @@ const iconSets = {
   FontAwesome,
   FontAwesome5,
   AntDesign,
+  Feather,
   MaterialCommunityIcons,
 };
 

@@ -6,7 +6,7 @@ import { RecentStatusData } from "../data/RecentStatusData";
 import FullModel from "../utils/FullModal";
 
 const RecentStatus = () => {
-  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(true);
   const [user, setUser] = useState(null);
 
   const statusModel = (id) => {
@@ -14,6 +14,10 @@ const RecentStatus = () => {
 
     const user = RecentStatusData.find((u) => u.id === id);
     setUser(user);
+  };
+
+  const setTimeUp = () => {
+    setShowStatusModal(false);
   };
 
   return (
@@ -41,7 +45,7 @@ const RecentStatus = () => {
           showStatusModal={showStatusModal}
           setShowStatusModal={setShowStatusModal}
           item={user}
-          setTimeUp={user?.time}
+          setTimeUp={setTimeUp}
         />
       )}
     </View>
@@ -50,7 +54,8 @@ const RecentStatus = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 15,
+    // marginTop: 15,
+    paddingHorizontal: 16,
   },
   recentStatus: {
     color: Colors.tertiary,

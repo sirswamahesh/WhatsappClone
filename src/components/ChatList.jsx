@@ -14,8 +14,7 @@ const ChatList = () => {
     <>
       {ChatListData.map((user) => (
         <View key={user.id}>
-
-          <TouchableOpacity onPress={onNavigate}  style={styles.container}>
+          <TouchableOpacity onPress={onNavigate} style={styles.container}>
             <View style={styles.leftContainer}>
               <Image source={user.profile} style={styles.profileImg} />
               <View>
@@ -38,7 +37,6 @@ const ChatList = () => {
             </View>
           </TouchableOpacity>
         </View>
-       
       ))}
     </>
   );

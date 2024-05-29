@@ -1,8 +1,8 @@
-import {View, StyleSheet, Animated} from 'react-native';
-import React, {useEffect, useRef} from 'react';
-import {Colors} from '../theme/Colors';
+import { View, StyleSheet, Animated } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Colors } from "../theme/Colors";
 
-const ProgressBar = ({setTimeUp}) => {
+const ProgressBar = ({ setTimeUp }) => {
   const progressAnimation = useRef(new Animated.Value(0)).current;
 
   const animateProgress = () => {
@@ -10,7 +10,7 @@ const ProgressBar = ({setTimeUp}) => {
       toValue: 100,
       duration: 10000,
       useNativeDriver: false,
-    }).start(({finished}) => {
+    }).start(({ finished }) => {
       if (finished) {
         setTimeUp();
       }
@@ -30,7 +30,7 @@ const ProgressBar = ({setTimeUp}) => {
             {
               width: progressAnimation.interpolate({
                 inputRange: [0, 100],
-                outputRange: ['0%', '100%'],
+                outputRange: ["0%", "100%"],
               }),
             },
           ]}
@@ -45,14 +45,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   progressBg: {
-    width: '100%',
-    height: 5,
-    backgroundColor: '#708090',
+    width: "100%",
+    height: 3,
+    backgroundColor: "#708090",
     borderRadius: 5,
   },
   progress: {
-    width: '100%',
-    height: 5,
+    width: "100%",
+    height: 3,
     backgroundColor: Colors.white,
     borderRadius: 5,
   },

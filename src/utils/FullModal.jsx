@@ -11,7 +11,7 @@ import React from "react";
 import { Colors } from "../theme/Colors";
 import VectorIcon from "../utils/VectorIcon";
 import { useNavigation } from "@react-navigation/native";
-
+import ProgressBar from "../utils/ProgressBar";
 const FullModal = (props) => {
   const navigation = useNavigation();
   const { showStatusModal, setShowStatusModal, item, setTimeUp } = props;
@@ -27,6 +27,7 @@ const FullModal = (props) => {
       onRequestClose={updateModalStatus}
     >
       <View style={styles.container}>
+        <ProgressBar setTimeUp={setTimeUp} />
         <View style={styles.topContainer}>
           <View style={styles.profileSection}>
             <TouchableOpacity onPress={updateModalStatus}>

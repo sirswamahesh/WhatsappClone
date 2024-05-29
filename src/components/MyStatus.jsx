@@ -10,8 +10,12 @@ const MyStatus = () => {
     <View style={styles.container}>
       <Image source={Profile} style={styles.profileImg} />
       <View style={styles.addIcon}>
-
-    <VectorIcon type="AntDesign" name="pluscircle" size={20} color={Colors.white}/>
+        <VectorIcon
+          type="AntDesign"
+          name="pluscircle"
+          size={20}
+          color={Colors.white}
+        />
       </View>
       <View style={styles.innerStatusContainer}>
         <Text style={styles.myStatus}>MyStatus</Text>
@@ -24,14 +28,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     gap: 15,
-   
+    padding: 16,
   },
   profileImg: {
     width: 50,
     height: 50,
     borderRadius: 50,
   },
-  innerStatusContainer: {},
+
   myStatus: {
     fontSize: 16,
     color: Colors.white,
@@ -40,14 +44,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.tertiary,
   },
-  addIcon:{
-    backgroundColor:Colors.textGrey,
-    width:20,
-    height:20,
-    borderRadius:50,
-    position:"absolute",
-    bottom:0,
-    left:33,
-  }
+  addIcon: {
+    backgroundColor: Colors.textGrey,
+    width: 20,
+    height: 20,
+    borderRadius: 50,
+    position: "absolute",
+    bottom: 14,
+    left: 48,
+  },
 });
 export default MyStatus;

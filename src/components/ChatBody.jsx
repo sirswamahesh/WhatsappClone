@@ -52,7 +52,7 @@ const ChatBody = () => {
         onContentSizeChange={scrollToBottom}
       >
         {MessagesData.map((item) => (
-          <View style={styles.messageContainer}  key={"user"}>
+          <View style={styles.messageContainer}>
             {item.id === userId ? (
               <UserMessageView message={item.message} time={item.time} />
             ) : (
@@ -61,13 +61,16 @@ const ChatBody = () => {
           </View>
         ))}
       </ScrollView>
-      <TouchableOpacity style={styles.scroolDownArrow} onPress={()=>scrollToBottom()}>
-
-      <VectorIcon  type="Fontisto"
-            name="angle-dobule-down"
-            color={Colors.white}
-            size={12} />
-            
+      <TouchableOpacity
+        style={styles.scroolDownArrow}
+        onPress={() => scrollToBottom()}
+      >
+        <VectorIcon
+          type="Fontisto"
+          name="angle-dobule-down"
+          color={Colors.white}
+          size={12}
+        />
       </TouchableOpacity>
     </>
   );
@@ -116,17 +119,17 @@ const styles = StyleSheet.create({
     gap: 5,
     marginBottom: 5,
   },
-  scroolDownArrow:{
-    backgroundColor:Colors.primaryColor,
-    borderRadius:50,
-    height:40,
-    width:40,
-    alignItems:'center',
-    justifyContent:"center",
-    position:"absolute",
-    bottom:10,
-    right:10,
-  }
+  scroolDownArrow: {
+    backgroundColor: Colors.primaryColor,
+    borderRadius: 50,
+    height: 40,
+    width: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+  },
 });
 
 export default ChatBody;
