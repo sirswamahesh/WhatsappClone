@@ -1,9 +1,17 @@
-import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
 
 import { Colors } from "../theme/Colors";
 import VectorIcon from "../utils/VectorIcon";
-const ChatFooter = () => {
+import { firebase } from "../../firebase";
+const ChatFooter = ({ chatRef, userId }) => {
   const [message, setMessage] = useState("");
   const [sendEnable, setSendEnable] = useState(false);
 
@@ -12,11 +20,14 @@ const ChatFooter = () => {
     setSendEnable(true);
   };
 
-
-  const onSendHandler = () => {
+  const onSendHandler = async () => {
+    chatRef.collection("messages").add({
+      body: message,
+      sender: userId,
+      timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
     setMessage("");
     setSendEnable(false);
-    Alert.alert("Message send SuccessFully!!")
   };
   return (
     <View style={styles.container}>
@@ -29,7 +40,7 @@ const ChatFooter = () => {
             color={Colors.white}
           />
           <TextInput
-            placeholder="Message"
+            placeholder="Message..."
             placeholderTextColor={Colors.textGrey}
             style={styles.textInput}
             value={message}
@@ -63,13 +74,12 @@ const ChatFooter = () => {
       </View>
       <View>
         {sendEnable ? (
-          <TouchableOpacity style={styles.sendIcon} onPress={onSendHandler} >
+          <TouchableOpacity style={styles.sendIcon} onPress={onSendHandler}>
             <VectorIcon
               type="MaterialCommunityIcons"
               name="send"
               size={20}
               color={Colors.white}
-              
             />
           </TouchableOpacity>
         ) : (

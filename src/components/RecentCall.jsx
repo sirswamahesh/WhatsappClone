@@ -9,8 +9,8 @@ const RecentCall = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.recent}>Recent</Text>
-      {RecentCallsData.map((user) => (
-        <View style={styles.callContainer}>
+      {RecentCallsData.map((user, index) => (
+        <View style={styles.callContainer} key={index}>
           <Image source={user.profileImg} style={styles.userProfile} />
           <View style={styles.callInfoContainer}>
             <View>

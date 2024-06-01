@@ -1,19 +1,39 @@
 import { View, Text, Image, StyleSheet } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Profile from "../assets/user1.jpeg";
 import { Colors } from "../theme/Colors";
 import Icon from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useNavigation } from "@react-navigation/native";
-const ChatHeader = () => {
+import { firebase } from "../../firebase";
+const ChatHeader = ({ contactUserRef }) => {
+  const [user, setUser] = useState({});
   const navigation = useNavigation();
+  useEffect(() => {
+    getContactUserData();
+  }, [contactUserRef]);
+  const getContactUserData = async () => {
+    const contactSnapShot = await contactUserRef.get();
+    const data = contactSnapShot.data();
+    const name = data.name;
+    const profile = await firebase.storage().ref(data.profile).getDownloadURL();
+    setUser({
+      name,
+      profile,
+    });
+  };
   return (
     <View style={styles.container}>
       <View style={styles.leftContainer}>
-        <Icon name="arrow-back" size={25} color={Colors.white} onPress={()=>navigation.goBack()} />
-        <Image source={Profile} style={styles.profilePhoto} />
-        <Text style={styles.username}>Kaju</Text>
+        <Icon
+          name="arrow-back"
+          size={25}
+          color={Colors.white}
+          onPress={() => navigation.goBack()}
+        />
+        <Image source={{ uri: user.profile }} style={styles.profilePhoto} />
+        <Text style={styles.username}>{user.name}</Text>
       </View>
       <View style={styles.rightContainer}>
         <Icon name="videocam" size={22} color={Colors.white} />
@@ -30,17 +50,16 @@ const styles = StyleSheet.create({
     padding: 12,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent:"space-between"
-
+    justifyContent: "space-between",
   },
-  leftContainer:{
+  leftContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-  rightContainer:{
+  rightContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap:20,
+    gap: 20,
   },
   profilePhoto: {
     height: 40,

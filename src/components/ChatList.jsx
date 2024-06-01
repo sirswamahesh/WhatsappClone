@@ -1,38 +1,115 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Colors } from "../theme/Colors";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { ChatListData } from "../data/ChatListData";
+import VectorIcon from "../utils/VectorIcon";
 import { useNavigation } from "@react-navigation/native";
+import { firebase } from "../../firebase";
 
-const ChatList = () => {
+const ChatList = ({ userId }) => {
   const navigation = useNavigation();
-  const onNavigate = () => {
-    navigation.navigate("ChatScreen");
+  const [chatList, setChatList] = useState([]);
+
+  useEffect(() => {
+    getChatList()
+      .then((chatData) => {
+        setChatList(chatData);
+      })
+      .catch((error) => {
+        console.log("error :", error);
+      });
+  }, [userId]);
+
+  const getChatList = async () => {
+    const userRef = firebase.firestore().collection("users").doc(userId);
+
+    const allChatDoc = await firebase
+      .firestore()
+      .collection("chats")
+      .where("participants", "array-contains", userRef)
+      .get();
+
+    const chatData = await Promise.all(
+      allChatDoc.docs.map(async (chatDoc) => {
+        // Get User data from user data with reference of chats
+        const data = chatDoc.data();
+        const participants = await Promise.all(
+          data.participants
+            .filter((item) => {
+              return item.id != userId;
+            })
+            .map(async (user) => {
+              const userDoc = await user.get();
+              const userData = await userDoc.data();
+              const id = user?.id;
+              const name = userData?.name;
+              const profile = await firebase
+                .storage()
+                .ref(userData?.profile)
+                .getDownloadURL();
+              return { id, name, profile };
+            })
+        );
+
+        const chatDocRef = chatDoc.ref;
+        const lastMessageDoc = await chatDocRef
+          .collection("messages")
+          .orderBy("timeStamp", "desc")
+          .limit(1)
+          .get();
+
+        const lastMessage = lastMessageDoc?.docs?.length
+          ? lastMessageDoc.docs[0].data()
+          : {};
+
+        return {
+          lastMessage,
+          otherUser: participants[0],
+        };
+      })
+    );
+    return chatData;
   };
+  console.log("data", chatList);
+  const onNavigate = (contactId) => {
+    navigation.navigate("ChatScreen", {
+      contactId: contactId,
+      userId: userId,
+    });
+  };
+
   return (
     <>
-      {ChatListData.map((user) => (
-        <View key={user.id}>
-          <TouchableOpacity onPress={onNavigate} style={styles.container}>
+      {chatList.map((item) => (
+        <View key={item?.otherUser?.id}>
+          <TouchableOpacity
+            onPress={() => onNavigate(item?.otherUser?.id)}
+            style={styles.container}
+          >
             <View style={styles.leftContainer}>
-              <Image source={user.profile} style={styles.profileImg} />
+              {item.otherUser?.profile && (
+                <Image
+                  source={{ uri: item.otherUser?.profile }}
+                  style={styles.profileImg}
+                />
+              )}
               <View>
-                <Text style={styles.username}>{user.name}</Text>
-                <Text style={styles.message}>{user.message}</Text>
+                <Text style={styles.username}>{item.otherUser?.name}</Text>
+                <Text style={styles.message}>{item.lastMessage.body}</Text>
               </View>
             </View>
+
             <View style={styles.rightContainer}>
-              <Text style={styles.timeStamp}>{user.time}</Text>
-              {user.mute ? (
-                <MaterialCommunityIcons
-                  style={styles.muteIcon}
+              <Text style={styles.timeStamp}>
+                {item.lastMessage.timestamp?.toDate().toDateString()}
+              </Text>
+              {item?.mute && (
+                <VectorIcon
+                  type="MaterialCommunityIcons"
                   name="volume-variant-off"
                   size={22}
-                  color={Colors.secondaryColor}
+                  color={Colors.textGrey}
+                  style={styles.muteIcon}
                 />
-              ) : (
-                ""
               )}
             </View>
           </TouchableOpacity>

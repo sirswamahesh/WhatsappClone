@@ -1,20 +1,42 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
 import { Colors } from "../theme/Colors";
 import VectorIcon from "../utils/VectorIcon";
 import MessagesData from "../data/MessageData";
-const ChatBody = () => {
+import { firebase } from "../../firebase";
+const ChatBody = ({ userId, chatId }) => {
   const scrollViewRef = useRef();
-  const userId = "1jdfnvchjkd";
-  const UserMessageView = ({ message, time }) => {
+  // const userId = "1jdfnvchjkd";
+  const [messages, setMessages] = useState([]);
+  useEffect(() => {
+    try {
+      firebase
+        .firestore()
+        .collection("chats")
+        .doc(chatId)
+        .collection("messages")
+        .orderBy("timeStamp")
+        .onSnapshot((snapShot) => {
+          const allMessages = snapShot.docs.map((snap) => {
+            return snap.data();
+          });
+          setMessages(allMessages);
+        });
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  }, [chatId]);
+
+  const UserMessageView = ({ message, fullTime }) => {
+    const time = fullTime?.toDate().toTimeString().slice(0, 5);
     return (
       <View style={styles.userContainer}>
         <View style={styles.userInnnerContainer}>
           <Text style={styles.message}>{message}</Text>
           <Text style={styles.time}>{time}</Text>
           <VectorIcon
-            type="FontAwesome5"
+            type="FontAwesome6"
             name="check-double"
             color={Colors.blue}
             size={12}
@@ -24,14 +46,15 @@ const ChatBody = () => {
     );
   };
 
-  const OtherUserMessageView = ({ message, time }) => {
+  const OtherUserMessageView = ({ message, fullTime }) => {
+    const time = fullTime?.toDate().toTimeString().slice(0, 5);
     return (
       <View style={styles.otherUserContainer}>
         <View style={styles.otherUserInnnerContainer}>
           <Text style={styles.message}>{message}</Text>
           <Text style={styles.time}>{time}</Text>
           <VectorIcon
-            type="FontAwesome5"
+            type="FontAwesome6"
             name="check-double"
             color={Colors.blue}
             size={12}
@@ -51,12 +74,15 @@ const ChatBody = () => {
         showsVerticalScrollIndicator={false}
         onContentSizeChange={scrollToBottom}
       >
-        {MessagesData.map((item) => (
-          <View style={styles.messageContainer}>
-            {item.id === userId ? (
-              <UserMessageView message={item.message} time={item.time} />
+        {messages.map((item, index) => (
+          <View style={styles.messageContainer} key={index}>
+            {item.sender === userId ? (
+              <UserMessageView message={item.body} fullTime={item.timeStamp} />
             ) : (
-              <OtherUserMessageView message={item.message} time={item.time} />
+              <OtherUserMessageView
+                message={item.body}
+                fullTime={item.timeStamp}
+              />
             )}
           </View>
         ))}
