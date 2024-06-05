@@ -11,25 +11,60 @@ import React, { useState } from "react";
 import { Colors } from "../theme/Colors";
 import VectorIcon from "../utils/VectorIcon";
 import { firebase } from "../../firebase";
-const ChatFooter = ({ chatRef, userId }) => {
+
+const StatusInput = ({
+  setStatusData,
+  setShowStatusModal,
+  img,
+  setLoadData,
+}) => {
   const [message, setMessage] = useState("");
-  const [sendEnable, setSendEnable] = useState(false);
   const [inputHeight, setInputHeigth] = useState(40);
 
   const MAX_HEIGHT = 100;
   const onChangeHandler = (text) => {
     setMessage(text);
-    setSendEnable(true);
+  };
+
+  const generateUniqueId = () => {
+    const timestamp = new Date().getTime().toString(36);
+    const randomNumber = Math.random().toString(36);
+    const uniqueId = timestamp + randomNumber;
+    return uniqueId;
   };
 
   const onSendHandler = async () => {
-    chatRef.collection("messages").add({
-      body: message,
-      sender: userId,
-      timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    const uniqueId = generateUniqueId();
+
+    setStatusData((prev) => ({ ...prev, statusCaption: message }));
+    if (!img) return;
+
+    console.log("imgs", img, uniqueId);
+
+    const response = await fetch(img);
+    const blob = await response.blob();
+    const ref = firebase.storage().ref().child(`status/${uniqueId}user.jpeg`);
+
+    ref
+      .put(blob)
+      .then(async () => {
+        await firebase
+          .firestore()
+          .collection("status")
+          .add({
+            caption: message,
+            name: "INFINIX",
+            status: `status/${uniqueId}user.jpeg`,
+            timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+      })
+      .catch((error) => {
+        console.error("Error uploading image: ", error);
+        alert("Error uploading image.");
+      });
     setMessage("");
-    setSendEnable(false);
+    setLoadData((prev) => !prev);
+    setShowStatusModal(false);
   };
   return (
     <View style={styles.container}>
@@ -42,7 +77,7 @@ const ChatFooter = ({ chatRef, userId }) => {
             color={Colors.white}
           />
           <TextInput
-            placeholder="Message..."
+            placeholder="Add Caption..."
             placeholderTextColor={Colors.textGrey}
             style={[
               styles.textInput,
@@ -57,51 +92,16 @@ const ChatFooter = ({ chatRef, userId }) => {
             scrollEnabled={MAX_HEIGHT < inputHeight}
           />
         </View>
-        <View style={styles.row2}>
+      </View>
+      <View>
+        <TouchableOpacity style={styles.sendIcon} onPress={onSendHandler}>
           <VectorIcon
-            type="Entypo"
-            name="attachment"
+            type="MaterialCommunityIcons"
+            name="send"
             size={20}
             color={Colors.white}
           />
-          {!sendEnable && (
-            <>
-              <VectorIcon
-                type="FontAwesome"
-                name="rupee"
-                size={20}
-                color={Colors.white}
-              />
-              <VectorIcon
-                type="FontAwesome"
-                name="camera"
-                size={20}
-                color={Colors.white}
-              />
-            </>
-          )}
-        </View>
-      </View>
-      <View>
-        {sendEnable ? (
-          <TouchableOpacity style={styles.sendIcon} onPress={onSendHandler}>
-            <VectorIcon
-              type="MaterialCommunityIcons"
-              name="send"
-              size={20}
-              color={Colors.white}
-            />
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.microIcon}>
-            <VectorIcon
-              type="FontAwesome"
-              name="microphone"
-              size={20}
-              color={Colors.white}
-            />
-          </View>
-        )}
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -110,7 +110,7 @@ const ChatFooter = ({ chatRef, userId }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.black,
-    paddingVertical: 25,
+    paddingVertical: 22,
     paddingHorizontal: 8,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -163,4 +163,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChatFooter;
+export default StatusInput;

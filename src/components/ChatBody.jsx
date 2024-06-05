@@ -119,11 +119,13 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
   },
   message: {
-    fontSize: 13,
+    fontSize: 15,
     color: Colors.white,
+    // minWidth: "70%",
+    maxWidth: "70%",
   },
 
   time: {
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
   },
   messageContainer: {
     gap: 5,

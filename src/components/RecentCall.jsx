@@ -1,7 +1,6 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import React from "react";
 import { Colors } from "../theme/Colors";
-import user1 from "../assets/user1.jpeg";
 import VectorIcon from "../utils/VectorIcon";
 import { RecentCallsData } from "../data/CallListData";
 

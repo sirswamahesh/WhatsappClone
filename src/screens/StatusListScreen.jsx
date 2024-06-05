@@ -1,15 +1,16 @@
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import MyStatus from "../components/MyStatus";
 import RecentStatus from "../components/RecentStatus";
 import ViewedStatus from "../components/ViewedStatus";
 import { Colors } from "../theme/Colors";
 
 const StatusListScreen = () => {
+  const [loadData, setLoadData] = useState(null);
   return (
     <ScrollView style={styles.container}>
-      <MyStatus />
-      <RecentStatus />
+      <MyStatus setLoadData={setLoadData} />
+      <RecentStatus loadData={loadData} />
       <ViewedStatus />
     </ScrollView>
   );

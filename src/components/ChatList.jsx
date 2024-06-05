@@ -1,51 +1,62 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import React, { useEffect, useState } from "react";
-import { Colors } from "../theme/Colors";
-import VectorIcon from "../utils/VectorIcon";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import React, { useState, useEffect } from "react";
 import { firebase } from "../../firebase";
+import { ActivityIndicator } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Colors } from "../theme/Colors";
 
 const ChatList = ({ userId }) => {
-  const navigation = useNavigation();
   const [chatList, setChatList] = useState([]);
+  const [loader, setLoader] = useState(true);
+  const navigation = useNavigation();
 
   useEffect(() => {
     getChatList()
-      .then((chatData) => {
-        setChatList(chatData);
+      .then((res) => {
+        setChatList(res);
+        setLoader(false);
       })
-      .catch((error) => {
-        console.log("error :", error);
-      });
+      .catch((error) => console.log(error));
   }, [userId]);
 
+  const onNavigate = (contactId) => {
+    navigation.navigate("ChatScreen", {
+      userId: userId,
+      contactId: contactId,
+    });
+  };
   const getChatList = async () => {
     const userRef = firebase.firestore().collection("users").doc(userId);
+    // console.log("userREf",userRef);
 
     const allChatDoc = await firebase
       .firestore()
       .collection("chats")
-      .where("participants", "array-contains", userRef)
+      .where("participents", "array-contains", userRef)
       .get();
+    // console.log("ALLCHATdOC",allChatDoc)
 
     const chatData = await Promise.all(
       allChatDoc.docs.map(async (chatDoc) => {
-        // Get User data from user data with reference of chats
         const data = chatDoc.data();
-        const participants = await Promise.all(
-          data.participants
+
+        const participents = await Promise.all(
+          data.participents
             .filter((item) => {
               return item.id != userId;
             })
             .map(async (user) => {
               const userDoc = await user.get();
-              const userData = await userDoc.data();
+              const userData = userDoc.data();
+
               const id = user?.id;
               const name = userData?.name;
               const profile = await firebase
                 .storage()
                 .ref(userData?.profile)
                 .getDownloadURL();
+
+              // console.log("user",id ,' ', name,' ' ," ", profile)
               return { id, name, profile };
             })
         );
@@ -57,65 +68,65 @@ const ChatList = ({ userId }) => {
           .limit(1)
           .get();
 
+        //   console.log(lastMessageDoc?.docs?.length)
         const lastMessage = lastMessageDoc?.docs?.length
           ? lastMessageDoc.docs[0].data()
           : {};
-
+        // console.log("participents ", participents[0]);
         return {
           lastMessage,
-          otherUser: participants[0],
+          otherUser: participents[0],
         };
       })
     );
+
     return chatData;
-  };
-  console.log("data", chatList);
-  const onNavigate = (contactId) => {
-    navigation.navigate("ChatScreen", {
-      contactId: contactId,
-      userId: userId,
-    });
   };
 
   return (
-    <>
-      {chatList.map((item) => (
-        <View key={item?.otherUser?.id}>
-          <TouchableOpacity
-            onPress={() => onNavigate(item?.otherUser?.id)}
-            style={styles.container}
-          >
-            <View style={styles.leftContainer}>
-              {item.otherUser?.profile && (
-                <Image
-                  source={{ uri: item.otherUser?.profile }}
-                  style={styles.profileImg}
-                />
-              )}
-              <View>
-                <Text style={styles.username}>{item.otherUser?.name}</Text>
-                <Text style={styles.message}>{item.lastMessage.body}</Text>
-              </View>
-            </View>
+    <View>
+      {loader ? (
+        <ActivityIndicator size="large" color="red" />
+      ) : (
+        <View>
+          {chatList.map((item) => {
+            return (
+              <View key={item.otherUser?.id}>
+                <TouchableOpacity
+                  style={styles.container}
+                  onPress={() => onNavigate(item.otherUser?.id)}
+                >
+                  <View style={styles.leftContainer}>
+                    {item.otherUser?.profile && (
+                      <Image
+                        source={{ uri: item.otherUser?.profile }}
+                        style={styles.profileImg}
+                      />
+                    )}
+                    <View>
+                      <Text style={styles.username}>
+                        {item.otherUser?.name}
+                      </Text>
+                      <Text style={styles.message}>
+                        {item.lastMessage?.body.length < 10
+                          ? item.lastMessage?.body
+                          : item.lastMessage?.body.slice(0, 10)}
+                      </Text>
+                    </View>
+                  </View>
 
-            <View style={styles.rightContainer}>
-              <Text style={styles.timeStamp}>
-                {item.lastMessage.timestamp?.toDate().toDateString()}
-              </Text>
-              {item?.mute && (
-                <VectorIcon
-                  type="MaterialCommunityIcons"
-                  name="volume-variant-off"
-                  size={22}
-                  color={Colors.textGrey}
-                  style={styles.muteIcon}
-                />
-              )}
-            </View>
-          </TouchableOpacity>
+                  <View style={styles.rightContainer}>
+                    <Text style={styles.timeStamp}>
+                      {item.lastMessage?.timeStamp.toDate().toDateString()}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            );
+          })}
         </View>
-      ))}
-    </>
+      )}
+    </View>
   );
 };
 
@@ -127,17 +138,16 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   container: {
-    backgroundColor: Colors.background,
     padding: 16,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   username: {
-    color: Colors.textColor,
+    color: "white",
     fontSize: 16,
   },
   message: {
-    color: Colors.textGrey,
+    color: Colors.tertiary,
     fontSize: 14,
     marginTop: 5,
   },
@@ -145,7 +155,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   timeStamp: {
-    color: Colors.textGrey,
+    color: Colors.tertiary,
     fontSize: 12,
   },
   muteIcon: {

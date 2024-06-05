@@ -1,18 +1,19 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
-import user1 from "../assets/user1.jpeg";
+import React, { useEffect, useState } from "react";
 import { Colors } from "../theme/Colors";
 import { RecentStatusData } from "../data/RecentStatusData";
 import FullModel from "../utils/FullModal";
-
-const RecentStatus = () => {
+import { firebase } from "../../firebase";
+import { ActivityIndicator } from "react-native";
+const RecentStatus = ({ loadData }) => {
   const [showStatusModal, setShowStatusModal] = useState(true);
   const [user, setUser] = useState(null);
-
+  const [data, setData] = useState([]);
+  const [loader, setLoader] = useState(true);
   const statusModel = (id) => {
     setShowStatusModal(true);
 
-    const user = RecentStatusData.find((u) => u.id === id);
+    const user = data.find((u) => u.id === id);
     setUser(user);
   };
 
@@ -20,26 +21,72 @@ const RecentStatus = () => {
     setShowStatusModal(false);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userRef = await firebase.firestore().collection("status").get();
+        console;
+        // Create an array of promises to fetch profile images
+        const users = await Promise.all(
+          userRef.docs.map(async (doc) => {
+            const { name, caption, status, timeStamp } = doc.data();
+
+            // Fetch profile image URL from Firebase Storage
+            const profileImageURL = await firebase
+              .storage()
+              .ref(status)
+              .getDownloadURL();
+
+            return {
+              id: doc.id,
+              name,
+              caption,
+              profileImageURL,
+              timeStamp,
+            };
+          })
+        );
+
+        setData(users);
+        setLoader(false);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchData();
+  }, [loadData]);
   return (
     <View style={styles.container}>
       <Text style={styles.recentStatus}>RecentStatus</Text>
-      {RecentStatusData.map((user) => (
-        <View key={user.id}>
-          <TouchableOpacity
-            style={styles.statusInfo}
-            key={user.id}
-            onPress={() => statusModel(user.id)}
-          >
-            <View style={styles.statusImgContainer}>
-              <Image source={user.storyImg} style={styles.statusImg} />
-            </View>
-            <View>
-              <Text style={styles.username}>{user.name}</Text>
-              <Text style={styles.time}>{user.time}</Text>
-            </View>
-          </TouchableOpacity>
+
+      {loader ? (
+        <ActivityIndicator />
+      ) : (
+        <View>
+          {data.map((user) => (
+            <TouchableOpacity
+              style={styles.statusInfo}
+              key={user.id}
+              onPress={() => statusModel(user.id)}
+            >
+              <View style={styles.statusImgContainer}>
+                <Image
+                  source={{ uri: user.profileImageURL }}
+                  style={styles.statusImg}
+                />
+              </View>
+              <View>
+                <Text style={styles.username}>{user.name}</Text>
+                <Text style={styles.time}>
+                  {user.timeStamp?.toDate().toTimeString().slice(0, 5)} PM
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
-      ))}
+      )}
+
       {!!user && (
         <FullModel
           showStatusModal={showStatusModal}

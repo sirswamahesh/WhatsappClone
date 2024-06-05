@@ -7,19 +7,29 @@ import {
   TouchableOpacity,
   TouchableHighlight,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Colors } from "../theme/Colors";
-import VectorIcon from "../utils/VectorIcon";
+import VectorIcon from "./VectorIcon";
 import { useNavigation } from "@react-navigation/native";
-import ProgressBar from "../utils/ProgressBar";
-const FullModal = (props) => {
+import ChatFooter from "../components/ChatFooter";
+import StatusInput from "../components/StatusInput";
+
+const ModalGo = (props) => {
   const navigation = useNavigation();
-  const { showStatusModal, setShowStatusModal, item, setTimeUp } = props;
+
+  const {
+    showStatusModal,
+    setShowStatusModal,
+    img,
+    setStatusData,
+    setLoadData,
+  } = props;
 
   const updateModalStatus = () => {
     setShowStatusModal(false);
   };
 
+  // console.log(">>>>>>>>>>>>>", statusData);
   return (
     <Modal
       animationType="fade"
@@ -27,45 +37,30 @@ const FullModal = (props) => {
       onRequestClose={updateModalStatus}
     >
       <View style={styles.container}>
-        <ProgressBar setTimeUp={setTimeUp} />
         <View style={styles.topContainer}>
           <View style={styles.profileSection}>
             <TouchableOpacity onPress={updateModalStatus}>
               <VectorIcon
-                name="arrow-back"
-                type="Ionicons"
+                name="cross"
+                type="Entypo"
                 size={24}
                 color={Colors.white}
               />
             </TouchableOpacity>
-            <Image
-              source={{ uri: item.profileImageURL }}
-              style={styles.profileImg}
-            />
-            <View style={styles.info}>
-              <Text style={styles.username}>{item.name}</Text>
-              <Text style={styles.time}>
-                {item.timeStamp.toDate().toTimeString().slice(0, 5)}PM
-              </Text>
-            </View>
+            <Image source={{ uri: img }} style={styles.profileImg} />
+            <Text style={styles.username}>My Status</Text>
           </View>
-          <VectorIcon
-            type="Entypo"
-            name="dots-three-vertical"
-            color={Colors.white}
-            size={18}
-          />
         </View>
-        <Image source={{ uri: item.profileImageURL }} style={styles.storyImg} />
-        <Text style={styles.storyMsg}>{item.caption}</Text>
-        <View style={styles.replySection}>
-          <VectorIcon
-            type="Entypo"
-            name="chevron-small-up"
-            color={Colors.white}
-            size={24}
+        <View style={styles.imgBox}>
+          <Image source={{ uri: img }} style={styles.storyImg} />
+        </View>
+        <View style={styles.footer}>
+          <StatusInput
+            img={img}
+            setStatusData={setStatusData}
+            setShowStatusModal={setShowStatusModal}
+            setLoadData={setLoadData}
           />
-          <Text style={styles.reply}>Reply</Text>
         </View>
       </View>
     </Modal>
@@ -73,8 +68,16 @@ const FullModal = (props) => {
 };
 
 const styles = StyleSheet.create({
+  imgBox: {
+    height: "80%",
+  },
   storyImg: {
-    height: "75%",
+    height: "100%",
+    width: "100%",
+  },
+  footer: {
+    position: "absolute",
+    bottom: 0,
     width: "100%",
   },
   storyMsg: {
@@ -84,8 +87,8 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: Colors.primaryColor,
-    height: "100%",
-    justifyContent: "space-between",
+    flex: 1,
+    // justifyContent: "space-between",
   },
   profileImg: {
     height: 40,
@@ -96,9 +99,7 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 17,
     color: Colors.white,
-  },
-  time: {
-    color: Colors.tertiary,
+    marginLeft: 10,
   },
   topContainer: {
     flexDirection: "row",
@@ -107,12 +108,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: "space-between",
   },
-  info: {
-    marginLeft: 20,
-  },
   profileSection: {
     flexDirection: "row",
     alignItems: "center",
+    // marginBottom: 20,
   },
   reply: {
     fontSize: 15,
@@ -125,4 +124,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FullModal;
+export default ModalGo;

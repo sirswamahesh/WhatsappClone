@@ -25,17 +25,17 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.primaryColor,
     padding: 16,
-    flexDirection:"row",
-    justifyContent:"space-between"
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   logoStyle: {
     height: 25,
     width: 110,
   },
-  headerIcons:{
-    flexDirection:"row",
-    gap:15
-  }
+  headerIcons: {
+    flexDirection: "row",
+    gap: 15,
+  },
 });
 
 export default Header;
