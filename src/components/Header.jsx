@@ -3,6 +3,7 @@ import { Text, View, Image, StyleSheet } from "react-native";
 import Whatsapp_logo from "../assets/WhatsApp_logo.png";
 import { Colors } from "../theme/Colors";
 import Icon from "react-native-vector-icons/Ionicons";
+import DeleteStatus from "./DeleteStatus";
 
 const Header = () => {
   return (
@@ -11,11 +12,7 @@ const Header = () => {
       <View style={styles.headerIcons}>
         <Icon name="camera-outline" size={25} color={Colors.secondaryColor} />
         <Icon name="search" size={25} color={Colors.secondaryColor} />
-        <Icon
-          name="ellipsis-vertical"
-          size={25}
-          color={Colors.secondaryColor}
-        />
+        <DeleteStatus />
       </View>
     </View>
   );

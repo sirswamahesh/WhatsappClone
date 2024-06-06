@@ -7,6 +7,7 @@ import { StyleSheet } from "react-native";
 import VectorIcon from "../utils/VectorIcon";
 import { useNavigation } from "@react-navigation/native";
 import { getDeviceId } from "../utils/helper";
+import DeleteStatus from "../components/DeleteStatus";
 const ChatListScreen = () => {
   const navigation = useNavigation();
   const [userId, setUserId] = useState("");
@@ -36,10 +37,10 @@ const ChatListScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      {/* <ScrollView>
         <ChatList userId={userId} />
-      </ScrollView>
-
+      </ScrollView> */}
+      <DeleteStatus />
       <TouchableOpacity style={styles.contectIcon} onPress={navigate}>
         <VectorIcon
           type="MaterialCommunityIcons"

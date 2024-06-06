@@ -12,6 +12,8 @@ import { Colors } from "../theme/Colors";
 import VectorIcon from "../utils/VectorIcon";
 import { useNavigation } from "@react-navigation/native";
 import ProgressBar from "../utils/ProgressBar";
+import DeleteStatus from "../components/DeleteStatus";
+import { firebase } from "../../firebase";
 const FullModal = (props) => {
   const navigation = useNavigation();
   const { showStatusModal, setShowStatusModal, item, setTimeUp } = props;
@@ -19,7 +21,38 @@ const FullModal = (props) => {
   const updateModalStatus = () => {
     setShowStatusModal(false);
   };
+  console.log("hekllod", item);
 
+  const deleteStatus = () => {
+    // console.log("Status successfully deleted");
+    const imageRef = firebase
+      .storage()
+      .ref()
+      .child(`status/${item.profileImageURL}`);
+    console.log("imagre", imageRef);
+    imageRef
+      .delete()
+      .then(function () {
+        console.log("imageRef successfully deleted");
+      })
+      .catch(function (error) {
+        console.error("Error deleting imageRef: ", error);
+      });
+    // const statusRef = firebase
+    //   .firestore()
+    //   .collection("status")
+    //   .doc(`${item.id}`);
+    // console.log("statis", statusRef);
+
+    // statusRef
+    //   .delete()
+    //   .then(function () {
+    //     console.log("Status successfully deleted");
+    //   })
+    //   .catch(function (error) {
+    //     console.error("Error deleting status: ", error);
+    //   });
+  };
   return (
     <Modal
       animationType="fade"
@@ -49,12 +82,19 @@ const FullModal = (props) => {
               </Text>
             </View>
           </View>
-          <VectorIcon
-            type="Entypo"
-            name="dots-three-vertical"
-            color={Colors.white}
-            size={18}
-          />
+          <View
+            style={{
+              flex: 1,
+
+              position: "absolute",
+              top: 5,
+              right: 5,
+              // left: 100,
+              zIndex: 50,
+            }}
+          >
+            <DeleteStatus deleteStatus={deleteStatus} />
+          </View>
         </View>
         <Image source={{ uri: item.profileImageURL }} style={styles.storyImg} />
         <Text style={styles.storyMsg}>{item.caption}</Text>
