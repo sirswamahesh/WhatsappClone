@@ -5,7 +5,7 @@ import { RecentStatusData } from "../data/RecentStatusData";
 import FullModel from "../utils/FullModal";
 import { firebase } from "../../firebase";
 import { ActivityIndicator } from "react-native";
-const RecentStatus = ({ loadData }) => {
+const RecentStatus = ({ loadData, setLoadData }) => {
   const [showStatusModal, setShowStatusModal] = useState(true);
   const [user, setUser] = useState(null);
   const [data, setData] = useState([]);
@@ -94,6 +94,7 @@ const RecentStatus = ({ loadData }) => {
           setShowStatusModal={setShowStatusModal}
           item={user}
           setTimeUp={setTimeUp}
+          setLoadData={setLoadData}
         />
       )}
     </View>

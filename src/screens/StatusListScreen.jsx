@@ -10,7 +10,7 @@ const StatusListScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <MyStatus setLoadData={setLoadData} />
-      <RecentStatus loadData={loadData} />
+      <RecentStatus loadData={loadData} setLoadData={setLoadData} />
       <ViewedStatus />
     </ScrollView>
   );

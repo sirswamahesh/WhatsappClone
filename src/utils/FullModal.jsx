@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   TouchableHighlight,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Colors } from "../theme/Colors";
 import VectorIcon from "../utils/VectorIcon";
 import { useNavigation } from "@react-navigation/native";
@@ -15,51 +15,52 @@ import ProgressBar from "../utils/ProgressBar";
 import DeleteStatus from "../components/DeleteStatus";
 import { firebase } from "../../firebase";
 const FullModal = (props) => {
+  const [loader, setLoader] = useState(false);
   const navigation = useNavigation();
-  const { showStatusModal, setShowStatusModal, item, setTimeUp } = props;
+  const { showStatusModal, setShowStatusModal, item, setTimeUp, setLoadData } =
+    props;
 
   const updateModalStatus = () => {
     setShowStatusModal(false);
   };
   console.log("current status", item);
   const deleteStatus = () => {
+    setLoader(true);
     const url = `${item.profileImageURL}`;
 
     const start = url.indexOf("F") + 1;
     const end = url.indexOf("?");
     const content = url.substring(start, end);
 
-    const imageRef = firebase
-      .storage()
-      .ref()
-      .child(
-        `status/https://firebasestorage.googleapis.com/v0/b/whatsapp-9278f.appspot.com/o/status%2Fuser1.jpeg?alt=media&token=9cda4e27-6cb8-4887-b30d-8a169d1cde76`
-      );
+    const imageRef = firebase.storage().ref().child(`status/${content}`);
 
-    // console.log("imageRef", imageRef);
+    console.log("imageRef", imageRef);
 
     // // Delete the image from Firebase Storage
-    imageRef.delete().then(() => {
-      console.log("imageRef successfully deleted");
-    });
+    imageRef
+      .delete()
+      .then(() => {
+        console.log("imageRef successfully deleted");
 
-    //     // Reference to the Firestore document
-    //     const statusRef = firebase
-    //       .firestore()
-    //       .collection("status")
-    //       .doc(`${item.id}`);
+        // Reference to the Firestore document
+        const statusRef = firebase
+          .firestore()
+          .collection("status")
+          .doc(`${item.id}`);
 
-    //     console.log("statusRef", statusRef);
+        console.log("statusRef", statusRef);
 
-    //     // Delete the document from Firestore
-    //     return statusRef.delete();
-    //   })
-    //   .then(() => {
-    //     console.log("Status successfully deleted");
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error deleting image or status: ", error);
-    //   });
+        // Delete the document from Firestore
+        return statusRef.delete();
+      })
+      .then(() => {
+        console.log("Status successfully deleted");
+        setLoader(false);
+        setLoadData((prev) => !prev);
+      })
+      .catch((error) => {
+        console.error("Error deleting image or status: ", error);
+      });
   };
   return (
     <Modal
@@ -100,7 +101,7 @@ const FullModal = (props) => {
               zIndex: 50,
             }}
           >
-            <DeleteStatus deleteStatus={deleteStatus} />
+            <DeleteStatus loader={loader} deleteStatus={deleteStatus} />
           </View>
         </View>
         <Image source={{ uri: item.profileImageURL }} style={styles.storyImg} />

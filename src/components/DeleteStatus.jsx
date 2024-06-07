@@ -4,10 +4,12 @@ import {
   Provider as PaperProvider,
   Menu,
   IconButton,
+  ActivityIndicator,
+  Button,
 } from "react-native-paper";
 import { Colors } from "../theme/Colors";
 
-const DeleteStatus = ({ deleteStatus }) => {
+const DeleteStatus = ({ deleteStatus, loader }) => {
   const [visible, setVisible] = React.useState(false);
 
   const openMenu = () => setVisible(true);
@@ -21,12 +23,18 @@ const DeleteStatus = ({ deleteStatus }) => {
           onDismiss={closeMenu}
           anchor={
             <View style={styles.container}>
-              <IconButton
-                icon="dots-vertical"
-                size={24}
-                onPress={openMenu}
-                iconColor={Colors.secondaryColor} // Use 'color' instead of 'iconColor'
-              />
+              {loader ? (
+                <Button style={styles.menuContent}>
+                  <ActivityIndicator />
+                </Button>
+              ) : (
+                <IconButton
+                  icon="dots-vertical"
+                  size={24}
+                  onPress={openMenu}
+                  iconColor={Colors.secondaryColor} // Use 'color' instead of 'iconColor'
+                />
+              )}
             </View>
           }
           contentStyle={styles.menuContent}

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 
@@ -20,6 +21,7 @@ const StatusInput = ({
 }) => {
   const [message, setMessage] = useState("");
   const [inputHeight, setInputHeigth] = useState(40);
+  const [send, setSend] = useState(false);
 
   const MAX_HEIGHT = 100;
   const onChangeHandler = (text) => {
@@ -34,6 +36,7 @@ const StatusInput = ({
   };
 
   const onSendHandler = async () => {
+    setSend(true);
     const uniqueId = generateUniqueId();
 
     setStatusData((prev) => ({ ...prev, statusCaption: message }));
@@ -57,14 +60,15 @@ const StatusInput = ({
             status: `status/${uniqueId}user.jpeg`,
             timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
           });
+        setMessage("");
+        setLoadData((prev) => !prev);
+        setSend(false);
+        setShowStatusModal(false);
       })
       .catch((error) => {
         console.error("Error uploading image: ", error);
         alert("Error uploading image.");
       });
-    setMessage("");
-    setLoadData((prev) => !prev);
-    setShowStatusModal(false);
   };
   return (
     <View style={styles.container}>
@@ -95,12 +99,16 @@ const StatusInput = ({
       </View>
       <View>
         <TouchableOpacity style={styles.sendIcon} onPress={onSendHandler}>
-          <VectorIcon
-            type="MaterialCommunityIcons"
-            name="send"
-            size={20}
-            color={Colors.white}
-          />
+          {send ? (
+            <ActivityIndicator />
+          ) : (
+            <VectorIcon
+              type="MaterialCommunityIcons"
+              name="send"
+              size={20}
+              color={Colors.white}
+            />
+          )}
         </TouchableOpacity>
       </View>
     </View>
