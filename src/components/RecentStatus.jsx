@@ -25,7 +25,7 @@ const RecentStatus = ({ loadData }) => {
     const fetchData = async () => {
       try {
         const userRef = await firebase.firestore().collection("status").get();
-        console;
+
         // Create an array of promises to fetch profile images
         const users = await Promise.all(
           userRef.docs.map(async (doc) => {
@@ -50,6 +50,7 @@ const RecentStatus = ({ loadData }) => {
         setData(users);
         setLoader(false);
       } catch (error) {
+        console.log("hello");
         console.error("Error fetching data: ", error);
       }
     };

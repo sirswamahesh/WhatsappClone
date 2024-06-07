@@ -33,7 +33,6 @@ const DeleteStatus = ({ deleteStatus }) => {
         >
           <Menu.Item
             onPress={() => {
-              console.log("helo");
               deleteStatus();
             }}
             title="Delete Status"

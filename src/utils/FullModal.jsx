@@ -21,36 +21,44 @@ const FullModal = (props) => {
   const updateModalStatus = () => {
     setShowStatusModal(false);
   };
-  console.log("hekllod", item);
-
+  console.log("current status", item);
   const deleteStatus = () => {
-    // console.log("Status successfully deleted");
+    const url = `${item.profileImageURL}`;
+
+    const start = url.indexOf("F") + 1;
+    const end = url.indexOf("?");
+    const content = url.substring(start, end);
+
     const imageRef = firebase
       .storage()
       .ref()
-      .child(`status/${item.profileImageURL}`);
-    console.log("imagre", imageRef);
-    imageRef
-      .delete()
-      .then(function () {
-        console.log("imageRef successfully deleted");
-      })
-      .catch(function (error) {
-        console.error("Error deleting imageRef: ", error);
-      });
-    // const statusRef = firebase
-    //   .firestore()
-    //   .collection("status")
-    //   .doc(`${item.id}`);
-    // console.log("statis", statusRef);
+      .child(
+        `status/https://firebasestorage.googleapis.com/v0/b/whatsapp-9278f.appspot.com/o/status%2Fuser1.jpeg?alt=media&token=9cda4e27-6cb8-4887-b30d-8a169d1cde76`
+      );
 
-    // statusRef
-    //   .delete()
-    //   .then(function () {
+    // console.log("imageRef", imageRef);
+
+    // // Delete the image from Firebase Storage
+    imageRef.delete().then(() => {
+      console.log("imageRef successfully deleted");
+    });
+
+    //     // Reference to the Firestore document
+    //     const statusRef = firebase
+    //       .firestore()
+    //       .collection("status")
+    //       .doc(`${item.id}`);
+
+    //     console.log("statusRef", statusRef);
+
+    //     // Delete the document from Firestore
+    //     return statusRef.delete();
+    //   })
+    //   .then(() => {
     //     console.log("Status successfully deleted");
     //   })
-    //   .catch(function (error) {
-    //     console.error("Error deleting status: ", error);
+    //   .catch((error) => {
+    //     console.error("Error deleting image or status: ", error);
     //   });
   };
   return (
@@ -89,7 +97,6 @@ const FullModal = (props) => {
               position: "absolute",
               top: 5,
               right: 5,
-              // left: 100,
               zIndex: 50,
             }}
           >

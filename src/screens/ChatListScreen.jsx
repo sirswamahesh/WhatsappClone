@@ -37,10 +37,10 @@ const ChatListScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* <ScrollView>
+      <ScrollView>
         <ChatList userId={userId} />
-      </ScrollView> */}
-      <DeleteStatus />
+      </ScrollView>
+      {/* <DeleteStatus /> */}
       <TouchableOpacity style={styles.contectIcon} onPress={navigate}>
         <VectorIcon
           type="MaterialCommunityIcons"
