@@ -14,8 +14,8 @@ import { useNavigation } from "@react-navigation/native";
 import ProgressBar from "../utils/ProgressBar";
 import DeleteStatus from "../components/DeleteStatus";
 import { firebase } from "../../firebase";
+import ProcessModal from "../utils/ProcessModal";
 const FullModal = (props) => {
-  const [loader, setLoader] = useState(false);
   const navigation = useNavigation();
   const { showStatusModal, setShowStatusModal, item, setTimeUp, setLoadData } =
     props;
@@ -25,7 +25,7 @@ const FullModal = (props) => {
   };
   console.log("current status", item);
   const deleteStatus = () => {
-    setLoader(true);
+    console.log("kdfksd");
     const url = `${item.profileImageURL}`;
 
     const start = url.indexOf("F") + 1;
@@ -55,7 +55,7 @@ const FullModal = (props) => {
       })
       .then(() => {
         console.log("Status successfully deleted");
-        setLoader(false);
+
         setLoadData((prev) => !prev);
       })
       .catch((error) => {
@@ -63,60 +63,56 @@ const FullModal = (props) => {
       });
   };
   return (
-    <Modal
-      animationType="fade"
-      visible={showStatusModal}
-      onRequestClose={updateModalStatus}
-    >
-      <View style={styles.container}>
-        <ProgressBar setTimeUp={setTimeUp} />
-        <View style={styles.topContainer}>
-          <View style={styles.profileSection}>
-            <TouchableOpacity onPress={updateModalStatus}>
-              <VectorIcon
-                name="arrow-back"
-                type="Ionicons"
-                size={24}
-                color={Colors.white}
+    <View>
+      <Modal
+        animationType="fade"
+        visible={showStatusModal}
+        onRequestClose={updateModalStatus}
+      >
+        <View style={styles.container}>
+          <ProgressBar setTimeUp={setTimeUp} />
+          <View style={styles.topContainer}>
+            <View style={styles.profileSection}>
+              <TouchableOpacity onPress={updateModalStatus}>
+                <VectorIcon
+                  name="arrow-back"
+                  type="Ionicons"
+                  size={24}
+                  color={Colors.white}
+                />
+              </TouchableOpacity>
+              <Image
+                source={{ uri: item.profileImageURL }}
+                style={styles.profileImg}
               />
-            </TouchableOpacity>
-            <Image
-              source={{ uri: item.profileImageURL }}
-              style={styles.profileImg}
-            />
-            <View style={styles.info}>
-              <Text style={styles.username}>{item.name}</Text>
-              <Text style={styles.time}>
-                {item.timeStamp.toDate().toTimeString().slice(0, 5)}PM
-              </Text>
+              <View style={styles.info}>
+                <Text style={styles.username}>{item.name}</Text>
+                <Text style={styles.time}>
+                  {item.timeStamp.toDate().toTimeString().slice(0, 5)}PM
+                </Text>
+              </View>
+            </View>
+            <View>
+              <DeleteStatus deleteStatus={deleteStatus} />
             </View>
           </View>
-          <View
-            style={{
-              flex: 1,
-
-              position: "absolute",
-              top: 5,
-              right: 5,
-              zIndex: 50,
-            }}
-          >
-            <DeleteStatus loader={loader} deleteStatus={deleteStatus} />
+          <Image
+            source={{ uri: item.profileImageURL }}
+            style={styles.storyImg}
+          />
+          <Text style={styles.storyMsg}>{item.caption}</Text>
+          <View style={styles.replySection}>
+            <VectorIcon
+              type="Entypo"
+              name="chevron-small-up"
+              color={Colors.white}
+              size={24}
+            />
+            <Text style={styles.reply}>Reply</Text>
           </View>
         </View>
-        <Image source={{ uri: item.profileImageURL }} style={styles.storyImg} />
-        <Text style={styles.storyMsg}>{item.caption}</Text>
-        <View style={styles.replySection}>
-          <VectorIcon
-            type="Entypo"
-            name="chevron-small-up"
-            color={Colors.white}
-            size={24}
-          />
-          <Text style={styles.reply}>Reply</Text>
-        </View>
-      </View>
-    </Modal>
+      </Modal>
+    </View>
   );
 };
 

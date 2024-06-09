@@ -1,67 +1,59 @@
-import * as React from "react";
-import { View, StyleSheet } from "react-native";
 import {
-  Provider as PaperProvider,
-  Menu,
-  IconButton,
-  ActivityIndicator,
+  View,
+  Text,
   Button,
-} from "react-native-paper";
+  TouchableOpacity,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from "react-native";
+import React, { useState } from "react";
+import VectorIcon from "../utils/VectorIcon";
 import { Colors } from "../theme/Colors";
+import ProcessModal from "../utils/ProcessModal";
 
-const DeleteStatus = ({ deleteStatus, loader }) => {
-  const [visible, setVisible] = React.useState(false);
-
-  const openMenu = () => setVisible(true);
-  const closeMenu = () => setVisible(false);
-
+const DeleteStatus = ({ deleteStatus }) => {
+  const [btnshow, setBtnShow] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const handleButtonPress = async () => {
+    console.log("djskflksdf");
+    await deleteStatus();
+    setModalVisible(true);
+    setBtnShow((prev) => !prev);
+    setTimeout(() => {
+      setModalVisible(false);
+    }, 10000); // 5 seconds
+  };
   return (
-    <PaperProvider>
-      <View style={styles.container}>
-        <Menu
-          visible={visible}
-          onDismiss={closeMenu}
-          anchor={
-            <View style={styles.container}>
-              {loader ? (
-                <Button style={styles.menuContent}>
-                  <ActivityIndicator />
-                </Button>
-              ) : (
-                <IconButton
-                  icon="dots-vertical"
-                  size={24}
-                  onPress={openMenu}
-                  iconColor={Colors.secondaryColor} // Use 'color' instead of 'iconColor'
-                />
-              )}
-            </View>
-          }
-          contentStyle={styles.menuContent}
-        >
-          <Menu.Item
-            onPress={() => {
-              deleteStatus();
-            }}
-            title="Delete Status"
-          />
-        </Menu>
-      </View>
-    </PaperProvider>
+    <View>
+      {btnshow ? (
+        <View style={styles.btn}>
+          <Button title="Delete Status" onPress={handleButtonPress} />
+        </View>
+      ) : (
+        ""
+      )}
+      <TouchableOpacity onPress={() => setBtnShow((prev) => !prev)}>
+        <VectorIcon
+          type="Entypo"
+          name="dots-three-vertical"
+          size={20}
+          color={Colors.tertiary}
+        />
+      </TouchableOpacity>
+      <ProcessModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
+    </View>
   );
 };
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  menuContent: {
-    position: "relative",
-    top: 10,
-    right: 320,
-    backgroundColor: "#FF6347", // Custom background color for all menu items
+  btn: {
+    position: "absolute",
+    top: 20,
+    right: 10,
+    zIndex: 1,
+    width: 150,
   },
 });
 
